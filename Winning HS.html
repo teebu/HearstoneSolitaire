@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!-- original site url=(0051)http://mrdoob.com/lab/javascript/effects/solitaire/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<title>Winning Hearthstone</title>
+		<style type="text/css">
+
+			body {
+				color: #ffffff;
+				background-color: #5f3710;
+				margin: 0px;
+				cursor: pointer;
+				overflow: hidden;
+			}
+
+		</style>
+	<style type="text/css"></style></head>
+	<body>
+
+
+		<script>
+
+			var info = document.createElement( 'div' );
+			info.style.position = 'absolute';
+			info.style.top = '10px';
+			info.style.width = '100%';
+			info.style.fontFamily = 'Monospace';
+			info.style.textAlign = 'center';
+			info.innerHTML = 'click and win!';
+			document.body.appendChild( info );
+
+			var canvas = document.createElement( 'canvas' );
+			canvas.style.position = 'absolute';
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			document.body.appendChild( canvas );
+
+			var context = canvas.getContext( '2d' );
+
+			var id = 364;
+
+			var cwidth = 70, cwidthhalf = cwidth / 2;
+			var cheight = 100, cheighthalf = cheight / 2;
+
+			var particles = [];
+
+			var Particle = function ( id, x, y, sx, sy ) {
+
+				if ( sx === 0 ) sx = 2;
+
+				var cx = ( id % 26 ) * cwidth;
+				var cy = Math.floor( id / 26 ) * cheight;
+
+				this.update = function () {
+
+					x += sx;
+					y += sy;
+
+					if ( x < ( - cwidthhalf ) || x > ( canvas.width + cwidthhalf ) ) {
+
+						var index = particles.indexOf( this );
+						particles.splice( index, 1 );
+
+						return false;
+
+					}
+
+					if ( y > canvas.height - cheighthalf ) {
+
+						y = canvas.height - cheighthalf;
+						sy = - sy * 0.85;
+
+					}
+
+					sy += 0.98;
+
+					//console.log('x', x, 'y', y, 'cx', cx, 'cy', cy)
+					context.drawImage( image, cx, cy, cwidth, cheight, Math.floor( x - cwidthhalf ), Math.floor( y - cheighthalf ), cwidth, cheight	);
+
+					return true;
+
+				}
+
+			}
+
+			var image = document.createElement( 'img' );
+			image.src = "hs.png";
+
+			var throwCard = function ( x, y ) {
+
+				id > 0 ? id -- : id = 364;
+
+				var particle = new Particle( id, x, y, Math.floor( Math.random() * 6 - 3 ) * 2, - Math.random() * 16 );
+				particles.push( particle );
+
+			}
+
+			document.addEventListener( 'mousedown', function ( event ) {
+
+				event.preventDefault();
+
+				document.addEventListener( 'mousemove', onMouseMove, false );
+
+			}, false );
+
+			document.addEventListener( 'mouseup', function ( event ) {
+
+				event.preventDefault();
+
+				throwCard( event.clientX, event.clientY );
+
+				document.removeEventListener( 'mousemove', onMouseMove, false );
+
+			}, false );
+
+			function onMouseMove( event ) {
+
+				event.preventDefault();
+
+				throwCard( event.clientX, event.clientY );
+
+			}
+
+			document.addEventListener( 'touchstart', function ( event ) {
+
+				event.preventDefault();
+
+				for ( var i = 0; i < event.changedTouches.length; i ++ ) {
+
+					throwCard( event.changedTouches[ 0 ].pageX, event.changedTouches[ 0 ].pageY );
+
+				}
+
+			}, false );
+
+			document.addEventListener( 'touchmove', function ( event ) {
+
+				event.preventDefault();
+
+				for ( var i = 0; i < event.touches.length; i ++ ) {
+
+					throwCard( event.touches[ i ].pageX, event.touches[ i ].pageY );
+
+				}
+
+			}, false );
+
+			setInterval( function () {
+
+				var i = 0, l = particles.length;
+
+				while ( i < l ) {
+
+					particles[ i ].update() ? i ++ : l --;
+
+				}
+
+			}, 1000 / 60 );
+
+		</script><div style="position: absolute; top: 10px; width: 100%; font-family: monospace; text-align: center;">click and win!</div><canvas width="1920" height="1017" style="position: absolute;"></canvas>
+	
+
+</body></html>
